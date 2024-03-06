@@ -44,3 +44,9 @@ class Ship:
     def blitme (self):
         #Dibuja la nave en su ubicación actual
         self.screen.blit(self.image, self.rect)
+
+
+    def center_ship (self):
+        #Centra la nave en la pantalla
+        self.rect.midbottom = self.screen_rect.midbottom
+        self.x = float(self.rect.x)
