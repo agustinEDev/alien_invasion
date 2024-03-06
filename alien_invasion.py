@@ -30,14 +30,19 @@ class AlienInvasion:
         #Crea una instancia para almacenar estadísticas del juego.
         self.stats = GameStats(self)
 
+        #Inicia Alien Invasion en un estado activo.
+        self.game_active = True
+
 
     def run_game (self):
         #Inicializa el bucle principal para el juego.
         while True:
             self._check_events()
-            self.ship.update()
-            self._update_bullets()
-            self._update_aliens()
+            if self.game_active:
+                self.ship.update()
+                self._update_bullets()
+                self._update_aliens()
+                
             self._update_screen()
             self.clock.tick(60)
 
@@ -109,7 +114,10 @@ class AlienInvasion:
         self.aliens.update()
 
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
-            print("Ship hit!!!")
+            self._ship_hit()
+
+        #Busca aliens que hayan llegado a la parte inferior de la pantalla.
+        self._check_aliens_bottom()
 
     def _create_fleet (self):
         #Crea la flota de aliens.
@@ -136,6 +144,25 @@ class AlienInvasion:
             new_alien.rect.y = y_position
             self.aliens.add(new_alien)
 
+    def _ship_hit (self):
+        #Responde a un impacto de un alien en la nave
+        if self.stats.ships_left > 0:
+            #Decrementa ships_left
+            self.stats.ships_left -= 1
+        else:
+            self.game_active = False
+
+        #Vacía la lista de aliens y balas
+        self.aliens.empty()
+        self.bullets.empty()
+
+        #Crea una nueva flota y centra la nave
+        self._create_fleet()
+        self.ship.center_ship()
+
+        #Pausa
+        sleep(0.5)
+
     def _check_fleet_edges (self):
         #Responde adecuadamente si algún alienígena ha llegado a un borde.
         for alien in self.aliens.sprites():
@@ -148,6 +175,14 @@ class AlienInvasion:
         for alien in self.aliens.sprites():
             alien.rect.y += self.settings.fleet_drop_speed
         self.settings.fleet_direction *= -1
+
+    def _check_aliens_bottom (self):
+        #Comprueba si algún alien ha llegado a la parte inferior de la pantalla.
+        for alien in self.aliens.sprites():
+            if alien.rect.bottom >= self.settings.screen_height:
+                #Trata este caso igual que si la nave fuera golpeada.
+                self._ship_hit()
+                break
 
     def _update_screen (self):
         #Actualiza las imágenes en la pantalla y cambia a la pantalla nueva
