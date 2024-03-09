@@ -56,7 +56,7 @@ class Scoreboard:
         #Centra la puntuación más alta en la parte superior de la pantalla.
         self.high_score_rect = self.high_score_image.get_rect()
         self.high_score_rect.centerx = self.screen_rect.centerx
-        self.high_score_rect.top = self.score_rect.top
+        self.high_score_rect.y = self.score_rect.y + 20
 
     def check_high_score (self):
         """Comprueba si hay una nueva puntuación más alta."""
