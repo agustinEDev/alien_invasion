@@ -1,0 +1,8 @@
+pandas
+matplotlib
+plotly
+datetime
+path
+pygame
+pathlib
+requests
